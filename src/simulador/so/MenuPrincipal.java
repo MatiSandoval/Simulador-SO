@@ -47,7 +47,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     public File carpetaSeleccionada;
     UIManager UI;
-    Integer x=0,inst= -1,multip=0,au1,au2,au3,au4,au5,au6,au7,au8,au9,au10,mascorto=100,p_mascorto=0,tiempoproceso =0;
+    Integer x=0,inst= -1,multip=0,mascorto=100,p_mascorto=0,tiempoproceso =0;
     Integer Fr1=0,Fr2=0,Fr3=0,f1=0,f2=0,f3=0;
     Boolean cargop=false;
     Proceso proceso1,proceso2,proceso3,procesocpu;
@@ -90,7 +90,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 inst=inst+1;
                 
                 p.setText("Instante "+inst);
-                ejecutar();ejecutar2();
+                ejecutar3();ejecutar();ejecutar2();
                 if(tiempoproceso>0){tiempoproceso-=1;}
                 //System.out.println(tiempoproceso);
             }}
@@ -357,16 +357,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     Collections.sort(lista); //Ordena la lista por tiempo de arribo, y si son iguales por tiempo de irrupcion
     
     colaVivos = lista;
-    au1=lista.get(0).Tam;
-    au2=lista.get(1).Tam;
-    au3=lista.get(2).Tam;
-    au4=lista.get(3).Tam;
-    au5=lista.get(4).Tam;
-    au6=lista.get(5).Tam;
-    au7=lista.get(6).Tam;
-    au8=lista.get(7).Tam;
-    au9=lista.get(8).Tam;
-    au10=lista.get(9).Tam;
+    
     
     String o="       ";
     for (int i=0;i<colaVivos.size();i++){
@@ -402,9 +393,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cargoo = cargaWorstFit(colaVivos.get(indicee));
         
                 
-    }if(multip>=5){cnuevos=true;}
-    
-    
+    }
     
     }
     
@@ -413,60 +402,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 colaListo.add(colaVivos.get(indicee));
                 colaVivos.remove(indicee);
                 indicee--;        //Si cargo un proceso se resta, porque como se elimino un elemento de la colaNuevo, entonces el siguiente elemento va a ocupar ese lugar,
-                if (!particiones[0].libre){
-                    if(Fr1 == 0 && b1==false){
-                Fr1 = particiones[0].getTamPart();
-                f1 = particiones[0].getProCargado();
-               
-                if (f1==1){Fr1=Fr1-au1;}
-                if (f1==2){Fr1=Fr1-au2;}
-                if (f1==3){Fr1=Fr1-au3;}
-                if (f1==4){Fr1=Fr1-au4;}
-                if (f1==5){Fr1=Fr1-au5;}
-                if (f1==6){Fr1=Fr1-au6;}
-                if (f1==7){Fr1=Fr1-au7;}
-                if (f1==8){Fr1=Fr1-au8;}
-                if (f1==9){Fr1=Fr1-au9;}
-                if (f1==10){Fr1=Fr1-au10;}}
                 
-                b1=true;
-                }
-                if (!particiones[1].libre){
-                if(Fr2 ==0 && b2==false){
-                 Fr2 = particiones[1].getTamPart();
-                f2 = particiones[1].getProCargado();
-                
-                if (f2==1){Fr2=Fr2-au1;}
-                if (f2==2){Fr2=Fr2-au2;}
-                if (f2==3){Fr2=Fr2-au3;}
-                if (f2==4){Fr2=Fr2-au4;}
-                if (f2==5){Fr2=Fr2-au5;}
-                if (f2==6){Fr2=Fr2-au6;}
-                if (f2==7){Fr2=Fr2-au7;}
-                if (f2==8){Fr2=Fr2-au8;}
-                if (f2==9){Fr2=Fr2-au9;}
-                if (f2==10){Fr2=Fr2-au10;}}
-                
-                b2=true;
-                }
-                if (!particiones[2].libre){
-                if (Fr3 ==0 && b3==false){
-                Fr3 = particiones[2].getTamPart();
-                f3 = particiones[2].getProCargado();
-                
-                if (f3==1){Fr3=Fr3-au1;}
-                if (f3==2){Fr3=Fr3-au2;}
-                if (f3==3){Fr3=Fr3-au3;}
-                if (f3==4){Fr3=Fr3-au4;}
-                if (f3==5){Fr3=Fr3-au5;}
-                if (f3==6){Fr3=Fr3-au6;}
-                if (f3==7){Fr3=Fr3-au7;}
-                if (f3==8){Fr3=Fr3-au8;}
-                if (f3==9){Fr3=Fr3-au9;}
-                if (f3==10){Fr3=Fr3-au10;}}
-                
-                b3=true;
-                    }
                 
                 }
     if(cargoo==false){
@@ -492,7 +428,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     
     public void ejecutar2(){
     Boolean b1=false,b2=false,b3=false;    
-            
+    Integer f1=0,f2=0,f3=0,a1=0,a2=0,a3=0;        
     //if(tiempoproceso==0){
        
     if(!cpu[0].libre && tiempoproceso==0){
@@ -514,14 +450,31 @@ public class MenuPrincipal extends javax.swing.JFrame {
     colaNuevo.remove(0);}
     }
     
-     cargarCPU(); 
-      
-    if (cpu[0].NroPart == 0){p1.setText("P"+particiones[0].ProCargado+" en ejecucion"+" FI: "+Fr1);}
-                else{if(particiones[0].ProCargado!=0){p1.setText("P"+particiones[0].ProCargado+" "+"FI: "+Fr1);}}
-    if (cpu[0].NroPart == 1){p2.setText("P"+particiones[1].ProCargado+ " en ejecucion"+" FI: "+Fr2);}else{
-                if(particiones[1].ProCargado!=0){p2.setText("P"+particiones[1].ProCargado+" "+" FI: "+Fr2);}}
-    if (cpu[0].NroPart == 2){p3.setText("P"+particiones[2].ProCargado+ " en ejecucion"+" FI "+Fr3);}
-                else{if(particiones[2].ProCargado!=0){p3.setText("P"+particiones[2].ProCargado+" "+" FI: "+Fr3);}}
+     cargarCPU();
+    for (int i=0;i<3;i++){
+    if(!particiones[i].libre){
+    for(Proceso lista2 : colaListo){
+                //busco el proceso mas corto por planificacion SJF, corto plazo
+                if (lista2.PID==particiones[0].ProCargado){
+                a1=lista2.Tam;
+                }
+                if (lista2.PID==particiones[1].ProCargado){
+                a2=lista2.Tam;
+                }
+                if (lista2.PID==particiones[2].ProCargado){
+                a3=lista2.Tam;
+                }
+                }
+    }}
+    f1=particiones[0].TamPart-a1;
+    f2=particiones[1].TamPart-a2;
+    f3=particiones[2].TamPart-a3;
+    if (cpu[0].NroPart == 0){p1.setText("P"+particiones[0].ProCargado+" en ejecucion"+" FI: "+f1);}
+                else{if(particiones[0].ProCargado!=0){p1.setText("P"+particiones[0].ProCargado+" "+"FI: "+f1);}}
+    if (cpu[0].NroPart == 1){p2.setText("P"+particiones[1].ProCargado+ " en ejecucion"+" FI: "+f2);}else{
+                if(particiones[1].ProCargado!=0){p2.setText("P"+particiones[1].ProCargado+" "+" FI: "+f2);}}
+    if (cpu[0].NroPart == 2){p3.setText("P"+particiones[2].ProCargado+ " en ejecucion"+" FI "+f3);}
+                else{if(particiones[2].ProCargado!=0){p3.setText("P"+particiones[2].ProCargado+" "+" FI: "+f3);}}
     String o="       ",m="       ",n="       ",ñ="       ";
                 if(!colaVivos.isEmpty()){
                 for (int i=0;i<colaVivos.size();i++){
@@ -558,6 +511,53 @@ public class MenuPrincipal extends javax.swing.JFrame {
     if(particiones[0].ProCargado==0){p1.setText("ESPACIO LIBRE");}
     if(particiones[1].ProCargado==0){p2.setText("ESPACIO LIBRE");}
     if(particiones[2].ProCargado==0){p3.setText("ESPACIO LIBRE");}
+    }
+    
+    public void ejecutar3(){
+    int indicee=0,instante = inst;
+    boolean cargoo = false,b1=false,b2=false,b3=false,cnuevos=false;
+    if (!colaNuevo.isEmpty()){
+    while (indicee< colaNuevo.size()){ 
+        cargoo=false;
+        if(!colaListo.isEmpty()){
+       multip=colaListo.size()+colaListoSuspendido.size();
+        }
+    
+        
+        if (multip < 5){
+        cargoo = cargaWorstFit(colaNuevo.get(indicee));
+        
+                
+    }
+    
+    
+    
+    
+    
+    
+    if (cargoo==true){
+                colaListo.add(colaNuevo.get(indicee));
+                colaNuevo.remove(indicee);
+                indicee--;        //Si cargo un proceso se resta, porque como se elimino un elemento de la colaNuevo, entonces el siguiente elemento va a ocupar ese lugar,
+                
+                
+                }
+    if(cargoo==false){
+    
+    if (multip < 5){
+    colaListoSuspendido.add(colaNuevo.get(indicee));
+    colaNuevo.remove(indicee);
+    indicee--;        //Si cargo un proceso se resta, porque como se elimino un elemento de la colaNuevo, entonces el siguiente elemento va a ocupar ese lugar,
+    
+    }
+    
+    
+    }
+    //System.out.println("Indice:"+indicee);
+    indicee++;
+    }
+        
+    }
     }
     
     
@@ -601,7 +601,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 }}
                 for(Proceso lista3 : colaListoSuspendido){
                    for (int i=0;i<3;i++){          //recorro las particiones 
-                    if (cpu[0].NroPart!=particiones[i].NroPart){
+                    //if (cpu[0].NroPart!=particiones[i].NroPart){
                     if(lista3.Tam<particiones[i].TamPart && lista3.TI<mascorto){
                     if(particiones[i].libre && particiones[i].TamPart > mayor){
                     libre=true;mayor=particiones[i].TamPart;
@@ -616,9 +616,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
                     swp=true;part2=i;
                     pos1=j;
                     }
+                }
+                //}
+                }
                 j=j+1;
-                }}
-                }}
+                }
                 if (swp==true){     //swap in/out
                 
                             if(libre == true){
@@ -626,11 +628,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
                             particiones[part].ProCargado = p_mascorto;
                             particiones[part].libre = false;
                             int d=pos1;
+                            colaListo.add(colaListoSuspendido.get(d)); //agrego el proceso de la cola de L/S a la de listos
                             colaListoSuspendido.remove(d);
                             //colaListoSuspendido.add(colaListo.get(colaListo.size()-1));
                             //colaListo.remove(colaListo.get(colaListo.size()-1));
                             //p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
-                            colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
                             }else{
                             for(Proceso lista2 : colaListo){
                             //busco el proceso mas corto por planificacion SJF, corto plazo
@@ -640,9 +642,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
                             y=y+1;
                             }
                             colaListo.add(colaListoSuspendido.get(j));
-                            colaListoSuspendido.remove(j);
+                            int l=j;int ñ=pos3;
+                            colaListoSuspendido.remove(l);
                             colaListoSuspendido.add(colaListo.get(pos3));
-                            colaListo.remove(pos3);
+                            colaListo.remove(ñ);
                             particiones[part2].ProCargado = p_mascorto;
                             particiones[part2].libre = false;
                             
