@@ -590,9 +590,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         return cargo;
     }
     public void PlanCortoPlazo(){
-                boolean swp=false,libero=false,b=false,b2=false,cargoo=false;
+                boolean swp=false,libre=false,libero=false,b=false,b2=false,cargoo=false;
                 mascorto=1000;
-                Integer pos1=100,pos2=0,j=0,mayor=0,part=0;
+                Integer pos1=100,pos2=0,j=0,mayor=0,part=0,mayor2=0,pos3=0,y=0,part2=0;
                 for(Proceso lista2 : colaListo){
                 //busco el proceso mas corto por planificacion SJF, corto plazo
                 if (lista2.TI<mascorto){
@@ -603,39 +603,75 @@ public class MenuPrincipal extends javax.swing.JFrame {
                    for (int i=0;i<3;i++){          //recorro las particiones 
                     if (cpu[0].NroPart!=particiones[i].NroPart){
                     if(lista3.Tam<particiones[i].TamPart && lista3.TI<mascorto){
+                    if(particiones[i].libre && particiones[i].TamPart > mayor){
+                    libre=true;mayor=particiones[i].TamPart;
                     mascorto=lista3.TI;
                     p_mascorto=lista3.PID;
                     swp=true;part=i;
-                    pos1=j;break;
+                    pos1=j;
                     }
-                    
+                    if(!particiones[i].libre && mayor2 > particiones[i].TamPart){
+                    mascorto=lista3.TI;mayor2=particiones[i].TamPart;
+                    p_mascorto=lista3.PID;
+                    swp=true;part2=i;
+                    pos1=j;
+                    }
                 j=j+1;
                 }}
-                }
-                if (swp==true){     //swap in 
-                if(pos1 != 100){
-                            if(particiones[part].libre){
+                }}
+                if (swp==true){     //swap in/out
+                
+                            if(libre == true){
+                            
                             particiones[part].ProCargado = p_mascorto;
                             particiones[part].libre = false;
                             int d=pos1;
                             colaListoSuspendido.remove(d);
-                            colaListoSuspendido.add(colaListo.get(colaListo.size()-1));
-                            colaListo.remove(colaListo.get(colaListo.size()-1));
-                            p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
+                            //colaListoSuspendido.add(colaListo.get(colaListo.size()-1));
+                            //colaListo.remove(colaListo.get(colaListo.size()-1));
+                            //p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
                             colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
+                            }else{
+                            for(Proceso lista2 : colaListo){
+                            //busco el proceso mas corto por planificacion SJF, corto plazo
+                            if (particiones[part2].ProCargado == lista2.PID){
+                            pos3=y;
                             }
-                            if(!particiones[part].libre){
-                            if(b==false){
+                            y=y+1;
+                            }
+                            colaListo.add(colaListoSuspendido.get(j));
+                            colaListoSuspendido.remove(j);
+                            colaListoSuspendido.add(colaListo.get(pos3));
+                            colaListo.remove(pos3);
+                            particiones[part2].ProCargado = p_mascorto;
+                            particiones[part2].libre = false;
+                            
+                            }
+                            
+                            
+                            //if(b==false){
                                 //NECESITO LIBERAR EL QUE ESTABA EN LA PARTICION Y GUARDARLO PARA MANDARLO A LA COLA DE L/S, Y TRAER EL OTRO
-                                particiones[part].ProCargado=0;
-                                particiones[part].libre=true;
-                                cargaWorstFit(colaListoSuspendido.get(pos1));
-                                p_mascorto=colaListo.size()-1;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
-                                colaListoSuspendido.add(colaListo.get(p_mascorto)); //agrego el ultimo proceso de la cola de listos a la de l/s
-                                colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
-                                colaListoSuspendido.remove(pos1);
-                            }
-                        }
+                                
+                                
+                                
+                               // int d=pos1;
+                               // colaListoSuspendido.add(colaListo.);
+                               // colaListo.remove(d);
+                               // colaListo.remove(colaListo.get(colaListo.size()-1));
+                               // p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
+                               // colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
+                                
+                                
+                                
+                               // particiones[part].ProCargado=0;
+                               // particiones[part].libre=true;
+                               // cargaWorstFit(colaListoSuspendido.get(pos1));
+                               // p_mascorto=colaListo.size()-1;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
+                               // colaListoSuspendido.add(colaListo.get(p_mascorto)); //agrego el ultimo proceso de la cola de listos a la de l/s
+                               // colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
+                               // colaListoSuspendido.remove(pos1);
+                            
+                        //}
                     
                     
                 
@@ -645,7 +681,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                     
                     
                 
-                }
+                
                 
                 
                 }
