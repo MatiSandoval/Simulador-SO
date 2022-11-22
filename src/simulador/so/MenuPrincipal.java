@@ -47,16 +47,16 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     public File carpetaSeleccionada;
     UIManager UI;
-    Integer x=0,inst= -1,multip=0,mascorto=100,p_mascorto=0,tiempoproceso =0;
+    Integer x=0,inst= -1,multip=0,mascorto=100,p_mascorto=0,tiempoproceso =0,tpp=0,xo=0;
     Integer Fr1=0,Fr2=0,Fr3=0,f1=0,f2=0,f3=0;
-    Boolean cargop=false;
+    Boolean cargop=false,bul=false;
     Proceso proceso1,proceso2,proceso3,procesocpu;
     Particion particiones[];
     CPU cpu[];
     ArrayList<CPU> CPU;
     ArrayList<Particion> memoriaFija;
     ArrayList<Proceso> lista = new ArrayList<Proceso>();      //Lista completa de la clase Proceso
-    ArrayList<Proceso> listaLLS = new ArrayList<Proceso>();      //Lista de procesos listos+listos y l/s
+    
     ArrayList<Proceso> colaListo = new ArrayList<Proceso>();    //Lista de procesos que esperam por la CPU
     ArrayList<Proceso> colaVivos = new ArrayList<Proceso>();    //Lista con los procesos que esperan por ingresar a la cola de listo y a memoria o disco
     ArrayList<Proceso> colaNuevo = new ArrayList<Proceso>();    //Lista de procesos admitidos pero no da la multiprogramación
@@ -67,15 +67,14 @@ public class MenuPrincipal extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         crearMemoriaFija();
+        UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
         
-        //crearExcel();
         CargarExcel();
         Carga();
         crearMemoriaFija();
         CargarProcesos();
         
-        //JOptionPane.showMessageDialog(rootPane, carpetaSeleccionada, "hola", 0);
-        //abrirExcel();
+        
         p.addKeyListener(new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
@@ -88,11 +87,16 @@ public class MenuPrincipal extends javax.swing.JFrame {
         @Override
         public void keyReleased(KeyEvent e) {if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 inst=inst+1;
-                
+                System.out.println(carpetaSeleccionada);
                 p.setText("Instante "+inst);
                 ejecutar3();ejecutar();ejecutar2();
-                if(tiempoproceso>0){tiempoproceso-=1;}
-                //System.out.println(tiempoproceso);
+                
+                if(tiempoproceso>0){
+                    if(cpu[0].NroPart==0){pb1.setVisible(true);pb2.setVisible(false);pb3.setVisible(false);}
+                    if(cpu[0].NroPart==1){pb1.setVisible(false);pb2.setVisible(true);pb3.setVisible(false);}
+                    if(cpu[0].NroPart==2){pb1.setVisible(false);pb2.setVisible(false);pb3.setVisible(true);}
+                    tiempoproceso-=1;}
+                
             }}
     });
         
@@ -182,13 +186,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
             Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    private void abrirExcel(){
-    try{
-          Runtime.getRuntime().exec("cmd /c start "+carpetaSeleccionada+"\\Procesos.xlsx");
-          }catch(IOException  e){
-              e.printStackTrace();
-          }
-    }   
+      
     
     public void leer(){
         boolean isRowEmpty=true;
@@ -250,18 +248,22 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 modelo.addRow((Object[])filas);
             }}
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            crearExcel();bul=true;
         } catch (IOException ex) {
             Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
   }
     public void crearMemoriaFija(){
         particiones = new Particion[3];
-            particiones[0] = new Particion(1, 0, 60, true, 0 , 101); 
-            particiones[1] = new Particion(2, 0, 120, true, 0 , 161);
-            particiones[2] = new Particion(3, 0, 250, true, 0 , 281);
+            particiones[0] = new Particion(0, 0, 60, true, 0 , 101); 
+            particiones[1] = new Particion(1, 0, 120, true, 0 , 161);
+            particiones[2] = new Particion(2, 0, 250, true, 0 , 281);
         cpu = new CPU[1];
         cpu[0] = new CPU (0,-1,0,0,0,true);
+        pb1.setVisible(false);
+        pb2.setVisible(false);
+        pb3.setVisible(false);
         
     }
     
@@ -282,6 +284,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
             XSSFSheet sheet = wb.getSheetAt(0);
             int id1 = Integer.parseInt(id);
             String o = ""+sheet.getRow(id1).getCell(1).toString();
+            String p = ""+sheet.getRow(id1).getCell(3).toString();
             XSSFRow fila = sheet.getRow(id1);
             if(fila == null){
                 fila = sheet.createRow(id1);}
@@ -296,10 +299,39 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 celda3 = fila.createCell(3);}
             int tam1 = Integer.parseInt(tam);
             double x = Double.parseDouble(o);
+            double z = Double.parseDouble(p);
             int y = (int) Math.round(x);
+            int w = (int) Math.round(z);
             int ta1 = Integer.parseInt(ta);
             int ti1 = Integer.parseInt(ti);
             
+            if (ti1<=0){b=b+1;JOptionPane.showOptionDialog(null, "No puede agregar procesos con tiempo de irrupción iguales o menores a cero.", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);
+            celda.setCellValue(y);
+            celda2.setCellValue(ta1);
+            celda3.setCellValue(w);
+            modelo.setValueAt(y, id1, 1);
+            modelo.setValueAt(ta1, id1, 2);
+            modelo.setValueAt(w, id1, 3);
+            
+            if (tam1<=0 || tam1>250){b=b+1;JOptionPane.showOptionDialog(null, "No puede agregar procesos con tamaño =< 0KB o que superen los 250KB.", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);
+            celda.setCellValue(y);
+            celda2.setCellValue(ta1);
+            celda3.setCellValue(w);
+            modelo.setValueAt(y, id1, 1);
+            modelo.setValueAt(ta1, id1, 2);
+            modelo.setValueAt(w, id1, 3);}
+            
+            
+            if (tam1<=250 && tam1>0){
+            modelo.setValueAt(tam1, id1, 1);
+            modelo.setValueAt(ta1, id1, 2);
+            modelo.setValueAt(w, id1, 3);
+            celda.setCellValue(tam1);
+            celda2.setCellValue(ta1);
+            celda3.setCellValue(w);
+            }
+            
+            }else{
             if (tam1<=0 || tam1>250){b=b+1;JOptionPane.showOptionDialog(null, "No puede agregar procesos con tamaño =< 0KB o que superen los 250KB.", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);
             celda.setCellValue(y);
             celda2.setCellValue(ta1);
@@ -307,6 +339,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
             modelo.setValueAt(y, id1, 1);
             modelo.setValueAt(ta1, id1, 2);
             modelo.setValueAt(ti1, id1, 3);}
+            
+            
             if (tam1<=250 && tam1>0){
             modelo.setValueAt(tam1, id1, 1);
             modelo.setValueAt(ta1, id1, 2);
@@ -315,6 +349,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
             celda2.setCellValue(ta1);
             celda3.setCellValue(ti1);
             }
+            
+            }
+            
+            
             
             file.close();
             FileOutputStream output = new FileOutputStream(".\\Procesos.xlsx");
@@ -327,6 +365,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
             Logger.getLogger(MenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }}
         if (b==0){JOptionPane.showOptionDialog(null, "Datos guardados satisfactoriamente.", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);}
+        
   }
     public void CargarExcel(){
        JFileChooser selectorCarpeta = new JFileChooser();
@@ -336,6 +375,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
        selectorCarpeta.setAcceptAllFileFilterUsed(false);
        if (selectorCarpeta.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
            carpetaSeleccionada = selectorCarpeta.getCurrentDirectory();
+           
        }
      
   }
@@ -343,7 +383,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cn.setText("Cola de Nuevos: ");
         if(!lista.isEmpty()){lista.clear();} //si se cargó anteriormente (al modificar un dato o volver a empezar)
         int ta=0,tam=0,ti=0;String k="";
-        for (int i=1;i<=10;i++){
+        for (int i=1;i<tabla.getRowCount();i++){
                 k=tabla.getValueAt(i, 1).toString();
                 tam=Integer.parseInt(k);
                 k=tabla.getValueAt(i, 2).toString();
@@ -364,18 +404,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     o += "       "+colaVivos.get(i).PID;}
     cn.setText("Procesos sin arribar: "+o);
 }
-    public Integer Recorrer(){
-        int indicee=0,ind=100,instante = inst; //si es 100 significa que no arribo ningun proceso
-        
-        while (indicee< colaVivos.size()){
-        if (colaVivos.get(indicee).TA <= instante) {
-       ind=colaVivos.get(indicee).PID;break;      
-        //return ind;
-        }
-        indicee++;
-        }
-        return ind;
-        }
+    
     
     public void ejecutar(){
     int indicee=0,instante = inst;
@@ -430,7 +459,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     Boolean b1=false,b2=false,b3=false;    
     Integer f1=0,f2=0,f3=0,a1=0,a2=0,a3=0;        
     //if(tiempoproceso==0){
-       
+                      
     if(!cpu[0].libre && tiempoproceso==0){
     TerminarProceso(cpu[0].PID);
     
@@ -441,7 +470,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
                         }}
                         cf.setText("Cola de Finalizados: "+t);
     //}
-    
+    pb1.setVisible(false);
+    pb2.setVisible(false);
+    pb3.setVisible(false);
+    xo=0;
     }
     
     if(!colaNuevo.isEmpty()){
@@ -451,6 +483,15 @@ public class MenuPrincipal extends javax.swing.JFrame {
     }
     
      cargarCPU();
+     pb1.setMaximum(tpp);
+                        pb2.setMaximum(tpp);
+                        pb3.setMaximum(tpp);
+                        if (xo<tpp){
+                        pb1.setValue(xo);
+                        pb2.setValue(xo);
+                        pb3.setValue(xo);
+                        xo=xo+1;
+                        }
     for (int i=0;i<3;i++){
     if(!particiones[i].libre){
     for(Proceso lista2 : colaListo){
@@ -702,7 +743,12 @@ public class MenuPrincipal extends javax.swing.JFrame {
                         cpu[0].TA = colaListo.get(i).getTA();
                         cpu[0].NroPart = j;
                         cpu[0].libre = false;
+                        tpp=colaListo.get(i).TI;
+                         
                         tiempoproceso=colaListo.get(i).TI;
+                        if(cpu[0].NroPart == 0){pb1.setVisible(true);}
+                        if(cpu[0].NroPart == 1){pb2.setVisible(true);}
+                        if(cpu[0].NroPart == 2){pb3.setVisible(true);}
                         //colaListo.remove(i);
                         
                         String m="       ";
@@ -716,7 +762,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
                         if (cpu[0].NroPart == 2){p3.setText("P"+particiones[2].ProCargado+ " en ejecucion"+" FI "+Fr3);}
                         //i--;
                 }
-        }}}
+        }}
+        
+        }
     }}
     
     
@@ -771,13 +819,28 @@ public class MenuPrincipal extends javax.swing.JFrame {
         return img;
     }
     private void Carga(){
-        int Seleccionada = tabla.getRowCount();
-        if(Seleccionada == 0){
-        crearExcel();
-        }
         leer();
+        if(bul == true){
+        leer();
+        }
+        
+        
+        
+        
     }
-    
+    private void Temporizador(){
+    Timer timer = new Timer (3000, new ActionListener ()
+        {
+            
+        public void actionPerformed(ActionEvent e)
+        {
+                                                        // Aquí el código que queramos ejecutar.
+        
+        }
+        });
+        timer.setInitialDelay(0);
+        timer.setRepeats(true);
+        timer.start();}
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -812,6 +875,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
+        pb2 = new javax.swing.JProgressBar();
+        pb3 = new javax.swing.JProgressBar();
+        pb1 = new javax.swing.JProgressBar();
         p = new javax.swing.JTextField();
         cn1 = new javax.swing.JTextField();
         cn = new javax.swing.JTextField();
@@ -824,7 +890,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
-        pg = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -912,7 +977,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel9.setText("P3");
         jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, -1, -1));
 
-        Menu.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 210, 280, 120));
+        Menu.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 280, 120));
 
         jPanel2.setBackground(new java.awt.Color(51, 51, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 255)));
@@ -947,7 +1012,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel10.setText("P2");
         jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, -1, -1));
 
-        Menu.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 330, 280, 120));
+        Menu.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 290, 280, 120));
 
         jPanel3.setBackground(new java.awt.Color(51, 51, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 255)));
@@ -1011,7 +1076,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jLabel7.setText("SISTEMA OPERATIVO 100KB");
         jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
 
-        Menu.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 570, 280, 120));
+        Menu.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 610, 280, 120));
 
         tabla.setBackground(new java.awt.Color(51, 51, 255));
         tabla.setFont(new java.awt.Font("Sitka Text", 0, 14)); // NOI18N
@@ -1058,11 +1123,26 @@ public class MenuPrincipal extends javax.swing.JFrame {
         });
         Menu.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 190, -1, -1));
 
+        pb2.setBackground(new java.awt.Color(51, 51, 255));
+        pb2.setForeground(new java.awt.Color(153, 255, 255));
+        pb2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        Menu.add(pb2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, 280, 40));
+
+        pb3.setBackground(new java.awt.Color(51, 51, 255));
+        pb3.setForeground(new java.awt.Color(153, 255, 255));
+        pb3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        Menu.add(pb3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 250, 280, 40));
+
+        pb1.setBackground(new java.awt.Color(51, 51, 255));
+        pb1.setForeground(new java.awt.Color(153, 255, 255));
+        pb1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        Menu.add(pb1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 570, 280, 40));
+
         p.setEditable(false);
         p.setBackground(new java.awt.Color(51, 51, 255));
         p.setForeground(new java.awt.Color(153, 255, 255));
         p.setText("EMPEZAR");
-        Menu.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(184, 710, 160, -1));
+        Menu.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 690, 160, 30));
 
         cn1.setEditable(false);
         cn1.setBackground(new java.awt.Color(51, 51, 255));
@@ -1079,12 +1159,22 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jButton4.setBackground(new java.awt.Color(51, 51, 255));
         jButton4.setForeground(new java.awt.Color(153, 255, 255));
         jButton4.setText("NUEVO");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         Menu.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         jButton1.setBackground(new java.awt.Color(51, 51, 255));
         jButton1.setForeground(new java.awt.Color(153, 255, 255));
         jButton1.setText("ACERCA DE...");
-        Menu.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 0, 120, -1));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        Menu.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 120, -1));
 
         cl.setEditable(false);
         cl.setBackground(new java.awt.Color(51, 51, 255));
@@ -1101,18 +1191,18 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cf.setEditable(false);
         cf.setBackground(new java.awt.Color(51, 51, 255));
         cf.setForeground(new java.awt.Color(153, 255, 255));
-        cf.setText("Cola de Finalizados: ");
+        cf.setText("Cola de Terminados: ");
         Menu.add(cf, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 640, 580, -1));
 
         jButton5.setBackground(new java.awt.Color(51, 51, 255));
         jButton5.setForeground(new java.awt.Color(153, 255, 255));
         jButton5.setText("AYUDA");
-        Menu.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 0, -1, -1));
+        Menu.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 0, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 255, 255));
         jLabel1.setText("SIMULADOR SISTEMAS OPERATIVOS");
-        Menu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 60, -1, -1));
+        Menu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/asd.jpg"))); // NOI18N
         Menu.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1030, 770));
@@ -1121,9 +1211,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
         jButton3.setForeground(new java.awt.Color(153, 255, 255));
         jButton3.setText("Eliminar seleccionado");
         Menu.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 180, -1, -1));
-
-        pg.setBackground(new java.awt.Color(153, 255, 255));
-        Menu.add(pg, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 590, 430, 80));
 
         getContentPane().add(Menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
@@ -1173,6 +1260,52 @@ public class MenuPrincipal extends javax.swing.JFrame {
         modificar();
         CargarProcesos();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        particiones[0].ProCargado= 0;particiones[0].libre=true;
+        particiones[1].ProCargado= 0;particiones[1].libre=true;
+        particiones[2].ProCargado= 0;particiones[2].libre=true;
+        pb1.setVisible(false);
+        pb2.setVisible(false);
+        pb3.setVisible(false);
+        cpu[0].NroPart=-1;
+        cpu[0].PID=0;
+        cpu[0].TA=0;
+        cpu[0].Tam=0;
+        cpu[0].libre=true;
+        tiempoproceso=0;
+        x=0;inst= -1;multip=0;mascorto=100;p_mascorto=0;tiempoproceso =0;tpp=0;xo=0;
+        p.setText("EMPEZAR");
+        Fr1=0;Fr2=0;Fr3=0;f1=0;f2=0;f3=0;
+        cargop=false;bul=false;
+        if(!colaListo.isEmpty()){for (int i = 0; i<colaListo.size();i++){
+        colaListo.remove(i);i--;}}
+        if(!colaNuevo.isEmpty()){for (int i = 0; i<colaNuevo.size();i++){
+        colaNuevo.remove(i);i--;}}
+        if(!colaListoSuspendido.isEmpty()){for (int i = 0; i<colaListoSuspendido.size();i++){
+        colaListoSuspendido.remove(i);i--;}}
+        if(!colaTerminados.isEmpty()){for (int i = 0; i<colaTerminados.size();i++){
+        colaTerminados.remove(i);i--;}}
+        if(!colaVivos.isEmpty()){for (int i = 0; i<colaVivos.size();i++){
+        colaVivos.remove(i);i--;}}
+        if(!lista.isEmpty()){for (int i = 0; i<lista.size();i++){
+        lista.remove(i);i--;}}
+        UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
+        cn1.setText("Cola de Nuevos: ");
+        cl.setText("Cola de Listos: ");
+        cls.setText("Cola de Listos y Suspendidos: ");
+        cn.setText("Procesos sin arribar: ");
+        cf.setText("Cola de Terminados: ");
+        //CargarExcel();
+        //Carga();
+        //crearMemoriaFija();
+        CargarProcesos();
+        
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1250,7 +1383,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel p4;
     private javax.swing.JLabel p5;
     private javax.swing.JLabel p6;
-    private javax.swing.JProgressBar pg;
+    private javax.swing.JProgressBar pb1;
+    private javax.swing.JProgressBar pb2;
+    private javax.swing.JProgressBar pb3;
     private javax.swing.JTable tabla;
     // End of variables declaration//GEN-END:variables
 }
