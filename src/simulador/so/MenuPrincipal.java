@@ -1110,8 +1110,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         Menu.add(pb1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 570, 280, 40));
 
         p.setEditable(false);
-        p.setBackground(new java.awt.Color(255, 153, 51));
+        p.setBackground(new java.awt.Color(51, 51, 255));
         p.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        p.setForeground(new java.awt.Color(153, 255, 255));
         p.setText("EMPEZAR");
         Menu.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 140, 220, 40));
 
@@ -1127,7 +1128,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cn.setText("Procesos sin arribar: ");
         Menu.add(cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 440, 580, 40));
 
-        nuevo.setBackground(new java.awt.Color(255, 153, 51));
+        nuevo.setBackground(new java.awt.Color(51, 51, 255));
+        nuevo.setForeground(new java.awt.Color(153, 255, 255));
         nuevo.setText("NUEVO");
         nuevo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -1144,7 +1146,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
         });
         Menu.add(nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 70, 30));
 
-        acerca.setBackground(new java.awt.Color(255, 153, 51));
+        acerca.setBackground(new java.awt.Color(51, 51, 255));
+        acerca.setForeground(new java.awt.Color(153, 255, 255));
         acerca.setText("ACERCA DE...");
         acerca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1171,7 +1174,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cf.setText("Cola de Terminados: ");
         Menu.add(cf, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 690, 580, 40));
 
-        ayuda.setBackground(new java.awt.Color(255, 153, 51));
+        ayuda.setBackground(new java.awt.Color(51, 51, 255));
+        ayuda.setForeground(new java.awt.Color(153, 255, 255));
         ayuda.setText("AYUDA");
         ayuda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
