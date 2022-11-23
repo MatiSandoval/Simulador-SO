@@ -5,6 +5,7 @@ import simulador.so.CPU;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -66,6 +67,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
     public MenuPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
+        
+        UI.put("OptionPane.messageForeground", Color.black);
         crearMemoriaFija();
         UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
         
@@ -85,9 +88,11 @@ public class MenuPrincipal extends javax.swing.JFrame {
             
         }
         @Override
-        public void keyReleased(KeyEvent e) {if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        public void keyReleased(KeyEvent e) {
+            if (colaListo.isEmpty() && colaListoSuspendido.isEmpty() && colaNuevo.isEmpty() && colaVivos.isEmpty()){JOptionPane.showOptionDialog(null, "Simulación terminada.", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);}
+            else{if (e.getKeyCode() == KeyEvent.VK_SPACE) {
                 inst=inst+1;
-                System.out.println(carpetaSeleccionada);
+                
                 p.setText("Instante "+inst);
                 ejecutar3();ejecutar();ejecutar2();
                 
@@ -98,6 +103,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                     tiempoproceso-=1;}
                 
             }}
+            }
     });
         
     }
@@ -272,6 +278,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         String id,tam,ta,ti;
         int b=0;
         DefaultTableModel modelo = (DefaultTableModel)tabla.getModel();
+        modelo.setValueAt("Sistema Operativo",0,1);
+        modelo.setValueAt("-",0,2);
+        modelo.setValueAt("-",0,3);
         for (int j =1; j<maxfila;j++){
         id=tabla.getValueAt(j, 0).toString();
         tam=tabla.getValueAt(j, 1).toString();
@@ -376,7 +385,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
        if (selectorCarpeta.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
            carpetaSeleccionada = selectorCarpeta.getCurrentDirectory();
            
-       }
+       }else{System.exit(0);}
      
   }
     private void CargarProcesos(){
@@ -401,7 +410,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
     
     String o="       ";
     for (int i=0;i<colaVivos.size();i++){
-    o += "       "+colaVivos.get(i).PID;}
+    o += "       | "+colaVivos.get(i).PID+" |";}
     cn.setText("Procesos sin arribar: "+o);
 }
     
@@ -461,12 +470,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
     //if(tiempoproceso==0){
                       
     if(!cpu[0].libre && tiempoproceso==0){
+    JOptionPane.showOptionDialog(null, "Terminó el proceso | P"+cpu[0].PID+" |", "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, icono("", 80, 80), null, NORMAL);
     TerminarProceso(cpu[0].PID);
     
     String t="       ";
                         if (!colaTerminados.isEmpty()){
                         for (int l=0;l<colaTerminados.size();l++){
-                        t += "       "+colaTerminados.get(l).PID;
+                        t += "       | "+colaTerminados.get(l).PID+" |";
                         }}
                         cf.setText("Cola de Finalizados: "+t);
     //}
@@ -519,22 +529,22 @@ public class MenuPrincipal extends javax.swing.JFrame {
     String o="       ",m="       ",n="       ",ñ="       ";
                 if(!colaVivos.isEmpty()){
                 for (int i=0;i<colaVivos.size();i++){
-                o += "       "+colaVivos.get(i).PID;
+                o += "       | "+colaVivos.get(i).PID+" |";
                 }}
                 
                 if (!colaListo.isEmpty()){
                 for (int j=0;j<colaListo.size();j++){
-                m += "       "+colaListo.get(j).PID;
+                m += "       | "+colaListo.get(j).PID+" |";
                 }
                 
                 }
                 
                 if (!colaListoSuspendido.isEmpty()){
                 for (int k=0;k<colaListoSuspendido.size();k++){
-                n += "       "+colaListoSuspendido.get(k).PID;}}
+                n += "       | "+colaListoSuspendido.get(k).PID+" |";}}
                 if (!colaNuevo.isEmpty()){
                 for (int k=0;k<colaNuevo.size();k++){
-                ñ += "       "+colaNuevo.get(k).PID;}}
+                ñ += "       | "+colaNuevo.get(k).PID+" |";}}
                 cn.setText("Procesos sin arribar: "+o);
                 cl.setText("Cola de Listos: "+m);
                 cls.setText("Cola de Listos/Suspendidos: "+n);
@@ -542,13 +552,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 
     
         
-        System.out.println("Part 1 "+particiones[0].ProCargado);
-        System.out.println("Part 2: "+particiones[1].ProCargado);
-        System.out.println("Part 3:"+particiones[2].ProCargado);
-        System.out.println("Multip: "+multip);
-    System.out.println("Listos: "+colaListo.size());
-    for (int p=0;p<colaListo.size();p++){System.out.println("Listo: "+p+" "+colaListo.get(p).PID);}
-    System.out.println("Suspendidos: "+colaListoSuspendido.size());
+    //    System.out.println("Part 1 "+particiones[0].ProCargado);
+    //    System.out.println("Part 2: "+particiones[1].ProCargado);
+    //    System.out.println("Part 3:"+particiones[2].ProCargado);
+    //    System.out.println("Multip: "+multip);
+    //System.out.println("Listos: "+colaListo.size());
+    //for (int p=0;p<colaListo.size();p++){System.out.println("Listo: "+p+" "+colaListo.get(p).PID);}
+    //System.out.println("Suspendidos: "+colaListoSuspendido.size());
     if(particiones[0].ProCargado==0){p1.setText("ESPACIO LIBRE");}
     if(particiones[1].ProCargado==0){p2.setText("ESPACIO LIBRE");}
     if(particiones[2].ProCargado==0){p3.setText("ESPACIO LIBRE");}
@@ -671,9 +681,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
                             int d=pos1;
                             colaListo.add(colaListoSuspendido.get(d)); //agrego el proceso de la cola de L/S a la de listos
                             colaListoSuspendido.remove(d);
-                            //colaListoSuspendido.add(colaListo.get(colaListo.size()-1));
-                            //colaListo.remove(colaListo.get(colaListo.size()-1));
-                            //p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
                             }else{
                             for(Proceso lista2 : colaListo){
                             //busco el proceso mas corto por planificacion SJF, corto plazo
@@ -692,42 +699,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
                             
                             }
                             
-                            
-                            //if(b==false){
-                                //NECESITO LIBERAR EL QUE ESTABA EN LA PARTICION Y GUARDARLO PARA MANDARLO A LA COLA DE L/S, Y TRAER EL OTRO
-                                
-                                
-                                
-                               // int d=pos1;
-                               // colaListoSuspendido.add(colaListo.);
-                               // colaListo.remove(d);
-                               // colaListo.remove(colaListo.get(colaListo.size()-1));
-                               // p_mascorto=colaListoSuspendido.get(pos1).PID;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
-                               // colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
-                                
-                                
-                                
-                               // particiones[part].ProCargado=0;
-                               // particiones[part].libre=true;
-                               // cargaWorstFit(colaListoSuspendido.get(pos1));
-                               // p_mascorto=colaListo.size()-1;                  //asigno la dir del ultimo elemento al p_mascorto para cargar en la cpu con la cola de listos en esa posicion
-                               // colaListoSuspendido.add(colaListo.get(p_mascorto)); //agrego el ultimo proceso de la cola de listos a la de l/s
-                               // colaListo.add(colaListoSuspendido.get(pos1)); //agrego el proceso de la cola de L/S a la de listos
-                               // colaListoSuspendido.remove(pos1);
-                            
-                        //}
-                    
-                    
-                
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
-                
                 }
     }
     public void cargarCPU() {
@@ -754,7 +725,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                         String m="       ";
                         if (!colaListo.isEmpty()){
                         for (int l=0;l<colaListo.size();l++){
-                        m += "       "+colaListo.get(l).PID;
+                        m += "       | "+colaListo.get(l).PID+" |";
                         }}
                         cl.setText("Cola de Listos: "+m);
                         if (cpu[0].NroPart == 0){p1.setText("P"+particiones[0].ProCargado+" en ejecucion"+" FI: "+Fr1);}
@@ -881,12 +852,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
         p = new javax.swing.JTextField();
         cn1 = new javax.swing.JTextField();
         cn = new javax.swing.JTextField();
-        jButton4 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        nuevo = new javax.swing.JButton();
+        acerca = new javax.swing.JButton();
         cl = new javax.swing.JTextField();
         cls = new javax.swing.JTextField();
         cf = new javax.swing.JTextField();
-        jButton5 = new javax.swing.JButton();
+        ayuda = new javax.swing.JButton();
+        mafos = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
@@ -995,7 +967,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         p2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         p2.setForeground(new java.awt.Color(153, 255, 255));
         p2.setText("ESPACIO LIBRE");
-        jPanel2.add(p2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 40, -1, -1));
+        jPanel2.add(p2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 50, -1, -1));
 
         jLabel12.setBackground(new java.awt.Color(153, 255, 255));
         jLabel12.setForeground(new java.awt.Color(153, 255, 255));
@@ -1111,7 +1083,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         tabla.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tabla);
 
-        Menu.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 220, 600, 210));
+        Menu.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 200, 600, 210));
 
         jButton2.setBackground(new java.awt.Color(51, 51, 255));
         jButton2.setForeground(new java.awt.Color(153, 255, 255));
@@ -1121,7 +1093,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        Menu.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 190, -1, -1));
+        Menu.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 170, -1, -1));
 
         pb2.setBackground(new java.awt.Color(51, 51, 255));
         pb2.setForeground(new java.awt.Color(153, 255, 255));
@@ -1139,70 +1111,91 @@ public class MenuPrincipal extends javax.swing.JFrame {
         Menu.add(pb1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 570, 280, 40));
 
         p.setEditable(false);
-        p.setBackground(new java.awt.Color(51, 51, 255));
-        p.setForeground(new java.awt.Color(153, 255, 255));
+        p.setBackground(new java.awt.Color(255, 153, 51));
+        p.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         p.setText("EMPEZAR");
-        Menu.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 690, 160, 30));
+        Menu.add(p, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 140, 220, 40));
 
         cn1.setEditable(false);
         cn1.setBackground(new java.awt.Color(51, 51, 255));
         cn1.setForeground(new java.awt.Color(153, 255, 255));
         cn1.setText("Cola de Nuevos: ");
-        Menu.add(cn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 500, 580, -1));
+        Menu.add(cn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 500, 580, 40));
 
         cn.setEditable(false);
         cn.setBackground(new java.awt.Color(51, 51, 255));
         cn.setForeground(new java.awt.Color(153, 255, 255));
         cn.setText("Procesos sin arribar: ");
-        Menu.add(cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 460, 580, -1));
+        Menu.add(cn, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 440, 580, 40));
 
-        jButton4.setBackground(new java.awt.Color(51, 51, 255));
-        jButton4.setForeground(new java.awt.Color(153, 255, 255));
-        jButton4.setText("NUEVO");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+        nuevo.setBackground(new java.awt.Color(255, 153, 51));
+        nuevo.setText("NUEVO");
+        nuevo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoMouseExited(evt);
             }
         });
-        Menu.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
-
-        jButton1.setBackground(new java.awt.Color(51, 51, 255));
-        jButton1.setForeground(new java.awt.Color(153, 255, 255));
-        jButton1.setText("ACERCA DE...");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        nuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                nuevoActionPerformed(evt);
             }
         });
-        Menu.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 120, -1));
+        Menu.add(nuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 70, 30));
+
+        acerca.setBackground(new java.awt.Color(255, 153, 51));
+        acerca.setText("ACERCA DE...");
+        acerca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                acercaActionPerformed(evt);
+            }
+        });
+        Menu.add(acerca, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 30, 110, 30));
 
         cl.setEditable(false);
         cl.setBackground(new java.awt.Color(51, 51, 255));
         cl.setForeground(new java.awt.Color(153, 255, 255));
         cl.setText("Cola de Listos: ");
-        Menu.add(cl, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 540, 580, -1));
+        Menu.add(cl, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 570, 580, 40));
 
         cls.setEditable(false);
         cls.setBackground(new java.awt.Color(51, 51, 255));
         cls.setForeground(new java.awt.Color(153, 255, 255));
         cls.setText("Cola de Listos y Suspendidos: ");
-        Menu.add(cls, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 590, 580, -1));
+        Menu.add(cls, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 630, 580, 40));
 
         cf.setEditable(false);
         cf.setBackground(new java.awt.Color(51, 51, 255));
         cf.setForeground(new java.awt.Color(153, 255, 255));
         cf.setText("Cola de Terminados: ");
-        Menu.add(cf, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 640, 580, -1));
+        Menu.add(cf, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 690, 580, 40));
 
-        jButton5.setBackground(new java.awt.Color(51, 51, 255));
-        jButton5.setForeground(new java.awt.Color(153, 255, 255));
-        jButton5.setText("AYUDA");
-        Menu.add(jButton5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 0, -1, -1));
+        ayuda.setBackground(new java.awt.Color(255, 153, 51));
+        ayuda.setText("AYUDA");
+        ayuda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ayudaActionPerformed(evt);
+            }
+        });
+        Menu.add(ayuda, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 30, 70, 30));
+
+        mafos.setText("MaFosDev - All rights reserved. 2022");
+        mafos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                mafosMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                mafosMouseExited(evt);
+            }
+        });
+        Menu.add(mafos, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 750, -1, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 255, 255));
         jLabel1.setText("SIMULADOR SISTEMAS OPERATIVOS");
-        Menu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 50, -1, -1));
+        Menu.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 70, -1, -1));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/asd.jpg"))); // NOI18N
         Menu.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1030, 770));
@@ -1261,7 +1254,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         CargarProcesos();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void nuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevoActionPerformed
         particiones[0].ProCargado= 0;particiones[0].libre=true;
         particiones[1].ProCargado= 0;particiones[1].libre=true;
         particiones[2].ProCargado= 0;particiones[2].libre=true;
@@ -1301,11 +1294,39 @@ public class MenuPrincipal extends javax.swing.JFrame {
         //crearMemoriaFija();
         CargarProcesos();
         
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_nuevoActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void acercaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acercaActionPerformed
+        acercade m = new acercade();
+        m.setVisible(true);
+    }//GEN-LAST:event_acercaActionPerformed
+
+    private void ayudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ayudaActionPerformed
+        // TODO add your handling code here:
+        ayuda m = new ayuda();
+        m.setVisible(true);
+    }//GEN-LAST:event_ayudaActionPerformed
+
+    private void mafosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mafosMouseEntered
+        // TODO add your handling code here:
+        mafos.setForeground(Color.white);
+    }//GEN-LAST:event_mafosMouseEntered
+
+    private void mafosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mafosMouseExited
+        // TODO add your handling code here:
+        mafos.setForeground(Color.black);
+    }//GEN-LAST:event_mafosMouseExited
+
+    private void nuevoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nuevoMouseEntered
+        nuevo.setMinimumSize(new Dimension(90,50));
+        //nuevo.setMaximumSize(new Dimension(90,50));
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_nuevoMouseEntered
+
+    private void nuevoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nuevoMouseExited
+        nuevo.setMinimumSize(new Dimension(70,30));
+        //nuevo.setMaximumSize(new Dimension(70,30));
+    }//GEN-LAST:event_nuevoMouseExited
 
     /**
      * @param args the command line arguments
@@ -1344,17 +1365,16 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Menu;
+    private javax.swing.JButton acerca;
+    private javax.swing.JButton ayuda;
     private javax.swing.JTextField cf;
     private javax.swing.JTextField cl;
     private javax.swing.JTextField cls;
     private javax.swing.JTextField cn;
     private javax.swing.JTextField cn1;
     private javax.swing.JButton exit;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1375,7 +1395,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel mafos;
     private javax.swing.JButton min;
+    private javax.swing.JButton nuevo;
     private javax.swing.JTextField p;
     private javax.swing.JLabel p1;
     private javax.swing.JLabel p2;
