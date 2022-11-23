@@ -67,7 +67,6 @@ public class MenuPrincipal extends javax.swing.JFrame {
     public MenuPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
         UI.put("OptionPane.messageForeground", Color.black);
         crearMemoriaFija();
         UIManager.put( "nimbusOrange", new Color( 38, 139, 210 ) );
