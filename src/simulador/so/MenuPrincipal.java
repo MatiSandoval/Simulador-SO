@@ -858,6 +858,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
         cf = new javax.swing.JTextField();
         ayuda = new javax.swing.JButton();
         mafos = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jTextField3 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
@@ -1195,6 +1198,21 @@ public class MenuPrincipal extends javax.swing.JFrame {
         });
         Menu.add(mafos, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 750, -1, -1));
 
+        jTextField1.setEditable(false);
+        jTextField1.setBackground(new java.awt.Color(51, 51, 255));
+        jTextField1.setBorder(null);
+        Menu.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 560, 280, 60));
+
+        jTextField2.setEditable(false);
+        jTextField2.setBackground(new java.awt.Color(51, 51, 255));
+        jTextField2.setBorder(null);
+        Menu.add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 400, 280, 60));
+
+        jTextField3.setEditable(false);
+        jTextField3.setBackground(new java.awt.Color(51, 51, 255));
+        jTextField3.setBorder(null);
+        Menu.add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 240, 280, 60));
+
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(204, 255, 255));
         jLabel1.setText("SIMULADOR SISTEMAS OPERATIVOS");
@@ -1398,6 +1416,9 @@ public class MenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
     private javax.swing.JLabel mafos;
     private javax.swing.JButton min;
     private javax.swing.JButton nuevo;
